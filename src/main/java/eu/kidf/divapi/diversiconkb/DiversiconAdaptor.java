@@ -56,12 +56,19 @@ public class DiversiconAdaptor implements IDivAPI {
         } else if (rel.equals(IDivAPI.WORD_SYNONYMY)) {
             ubySenseRels.add(ERelNameSemantics.SYNONYM);
         } else if (rel.equals(IDivAPI.WORD_SIMILARITY)) {
+            ubySenseRels.add(ERelNameSemantics.SYNONYM);
             ubySenseRels.add(ERelNameSemantics.SYNONYMNEAR);
             ubySynsetRels.add(ERelNameSemantics.HYPERNYM);
             ubySynsetRels.add(ERelNameSemantics.HYPERNYMINSTANCE);
             ubySynsetRels.add(ERelNameSemantics.HYPONYM);
             ubySynsetRels.add(ERelNameSemantics.HYPONYMINSTANCE);
         } else {
+            ubySenseRels.add(ERelNameSemantics.SYNONYM);
+            ubySenseRels.add(ERelNameSemantics.SYNONYMNEAR);
+            ubySynsetRels.add(ERelNameSemantics.HYPERNYM);
+            ubySynsetRels.add(ERelNameSemantics.HYPERNYMINSTANCE);
+            ubySynsetRels.add(ERelNameSemantics.HYPONYM);
+            ubySynsetRels.add(ERelNameSemantics.HYPONYMINSTANCE);
             ubySynsetRels.add(ERelNameSemantics.CAUSEDBY);
             ubySynsetRels.add(ERelNameSemantics.CAUSES);
             ubySynsetRels.add(ERelNameSemantics.ENTAILEDBY);
@@ -102,10 +109,9 @@ public class DiversiconAdaptor implements IDivAPI {
             if (!ubySynsetRels.isEmpty()) {
                 // look up synset relations
                 List<SynsetRelation> synRels = synset.getSynsetRelations();
-                System.out.println("call");
-                Set<Synset> relatedSynsets = dic.getConnectedSynsets(concept.getID(), 3, ubySynsetRels);
-                System.out.println("finished " + relatedSynsets.size());
-                for (Synset relSyn : relatedSynsets) {
+                Iterator<Synset> relatedSynsets = dic.getConnectedSynsets(concept.getID(), 3, ubySynsetRels);
+                while (relatedSynsets.hasNext()) {
+                    Synset relSyn = (Synset) relatedSynsets.next();
                     List<Sense> relSenses = relSyn.getSenses();
                     for (Sense relSense : relSenses) {
                         String w = relSense.getLexicalEntry().getLemmaForm();
@@ -294,9 +300,10 @@ public class DiversiconAdaptor implements IDivAPI {
     public Set<Concept> getRelatedConcepts(Concept concept, Set<ConceptRelation> relations) {
         checkConcept(concept);
         Set<Concept> relatedConcepts = new HashSet<>();
-        Set<Synset> set = dic.getConnectedSynsets(
+        Iterator<Synset> set = dic.getConnectedSynsets(
                 concept.getID(), -1, convertConceptRelations(relations));
-        for (Synset relatedSynset : set) {
+        while (set.hasNext()) {
+            Synset relatedSynset = (Synset) set.next();
             relatedConcepts.add(new Concept(relatedSynset, relatedSynset.getId()));
         }
         return relatedConcepts;
@@ -434,8 +441,6 @@ public class DiversiconAdaptor implements IDivAPI {
                 Domain domain = Domain.getDomain(lemma);
                 if (domain != null) {
                     domainList.add(domain);
-                } else {
-                    System.out.println("Could not find domain " + lemma);
                 }
             }
         }
