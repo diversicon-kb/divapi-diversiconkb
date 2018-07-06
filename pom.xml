@@ -10,7 +10,7 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
 
-        <divapi.version>0.9.0</divapi.version>
+        <divapi.version>0.9.1</divapi.version>
         <diversicon.version>0.1.0-SNAPSHOT</diversicon.version>
     </properties>
 
